@@ -19,5 +19,28 @@ describe('index', function(){
 			done(err);
 		});
 	});
+
+	it('handles if the file is not there', function(done){
+		var err = new Error('no file, sorry');
+		this.sandbox.stub(fs, 'readFile', function(path, encoding, callback){
+                        return callback(err);
+                });
+
+                sut.read(function(err, name) {
+                        expect(err).to.eql(err);
+                        done();
+                });
+	});
+
+	it('handles if the returned value is not a JSON', function(done){
+                this.sandbox.stub(fs, 'readFile', function(path, encoding, callback){
+                        return callback(null, 'this is not "json", sorry');
+                });
+
+                sut.read(function(err, name) {
+                        expect(err.message).to.eql('Unexpected token h');
+                        done();
+                });
+	});
 });
 
